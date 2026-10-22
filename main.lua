@@ -1,63 +1,10 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
-local localPlayer = Players.LocalPlayer
 
--- Cấu hình thông tin GitHub của bạn
-local GITHUB_USER = "vinhhello13"
-local REPO_NAME = "bananacat"
-local BRANCH = "main"
+print("[Banana Cat Hub Test]: Đã bỏ qua bước Check Key/HWID! Đang nhận diện game...")
 
-local BASE_URL = "https://raw.githubusercontent.com/" .. GITHUB_USER .. "/" .. REPO_NAME .. "/" .. BRANCH .. "/"
-local KEY_URL = BASE_URL .. "keys.json"
-
--- 1. LẤY MÃ HWID THIẾT BỊ KHÁCH
-local successHwid, hwid = pcall(function()
-    return RbxAnalyticsService:GetClientId()
-end)
-hwid = successHwid and hwid or "UNKNOWN_HWID"
-
--- 2. XÁC THỰC KEY & HWID
-local userKey = getgenv().Key
-
-if not userKey or userKey == "" then
-    localPlayer:Kick("[Banana Cat Hub]: Bạn chưa nhập Key!")
-    return
-end
-
-local successKey, keyRaw = pcall(function()
-    return game:HttpGet(KEY_URL)
-end)
-
-if not successKey then
-    localPlayer:Kick("[Banana Cat Hub]: Lỗi kết nối máy chủ xác thực Key!")
-    return
-end
-
-local keyData = HttpService:JSONDecode(keyRaw)
-
-if not keyData[userKey] then
-    localPlayer:Kick("[Banana Cat Hub]: Key không tồn tại hoặc đã hết hạn!")
-    return
-end
-
-local clientInfo = keyData[userKey]
-
--- Kiểm tra khóa HWID (1 máy)
-if clientInfo.HWID == "" then
-    setclipboard(hwid)
-    localPlayer:Kick("[Banana Cat Hub]: Key chưa gán máy! Mã HWID đã được copy: " .. hwid .. "\nVui lòng gửi mã này cho Admin để kích hoạt.")
-    return
-elseif clientInfo.HWID ~= hwid then
-    localPlayer:Kick("[Banana Cat Hub]: Key này đã được đăng ký ở thiết bị khác!")
-    return
-end
-
-print("[Banana Cat Hub]: Xác thực thành công! Đang tải game...")
-
--- 3. HỆ THỐNG ĐỊNH TUYẾN THEO GAME (GAME DETECTOR ROUTER)
+-- 1. HỆ THỐNG ĐỊNH TUYẾN THEO GAME (GAME DETECTOR ROUTER)
 local successUniverse, universeResponse = pcall(function()
     return game:HttpGet("https://apis.roblox.com/universes/v1/places/" .. game.PlaceId .. "/universe")
 end)
@@ -68,6 +15,7 @@ if successUniverse then
     UniverseID = parsed.universeId or 0
 end
 
+-- Check game để load script tương ứng
 if game.PlaceId == 1537690962 or game.PlaceId == 4079902982 then
     if getgenv().betabss then
         loadstring(game:HttpGet("https://raw.githubusercontent.com/hlamx/huhu/master/bssrewrite-obfuscated.lua"))()
